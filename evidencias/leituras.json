@@ -1,0 +1,25 @@
+{
+  "imagens": 160,
+  "exatas": 160,
+  "sugeridas": 159,
+  "sugeridas_corretas": 159,
+  "revisao": 1,
+  "limiar": 0.65,
+  "latencia_media_ms": 19.609818331286988,
+  "latencia_p95_ms": 23.283682449959993,
+  "fps": 50.9948630377939,
+  "por_cenario": {
+    "lcd": {
+      "amostras": 54,
+      "exatas": 54
+    },
+    "mecanico": {
+      "amostras": 53,
+      "exatas": 53
+    },
+    "reflexo": {
+      "amostras": 53,
+      "exatas": 53
+    }
+  }
+}

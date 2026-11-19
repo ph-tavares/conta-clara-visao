@@ -29,7 +29,7 @@ Medidos com o modelo final, em dados fora do treino. A leitura completa e o test
 | Leitura completa, fotos reais | mesmas 196 fotos | **74 leituras exatas (38%)**; 74% dos dígitos certos quando a quantidade bate |
 | Teste externo | 17 leituras em 14 fotos do Wikimedia Commons, outra fonte, conferidas manualmente | **10 de 17 exatas (59%)** |
 | Bancada sintética | 160 imagens do gerador original | **160 de 160** |
-| Velocidade | CPU de notebook (Apple M5), mesmas 196 fotos | 21,9 ms por foto em média (~45 quadros/s) |
+| Velocidade | CPU de notebook (Apple M5), mesmas 196 fotos | 21,9 ms por foto em média (~46 quadros/s) |
 
 Arquivos: [`evidencias/deteccao_teste/`](evidencias/deteccao_teste), [`evidencias/classificador_teste/`](evidencias/classificador_teste) (acerto por dígito 86,2%), [`evidencias/leitura_reais/`](evidencias/leitura_reais), [`evidencias/leitura_sinteticas/`](evidencias/leitura_sinteticas), [`evidencias/teste_externo.json`](evidencias/teste_externo.json) e as imagens anotadas em [`evidencias/teste_externo/`](evidencias/teste_externo).
 

@@ -4,3 +4,5 @@ __pycache__/
 dados/
 runs/
 yolo11n.pt
+dados_reais/
+teste_externo/fotos/

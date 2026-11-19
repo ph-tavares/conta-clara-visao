@@ -7,7 +7,7 @@ from statistics import mean
 from time import perf_counter
 
 import numpy as np
-from conta_clara import DEFAULT_MODEL, MIN_SCORE, Reader, load_image
+from conta_clara import DEFAULT_CLASSIFIER, DEFAULT_MODEL, MIN_SCORE, Reader, load_image
 
 def measure(reader, data, rows):
     paths = [data/'images'/r['divisao']/r['arquivo'] for r in rows]
@@ -21,7 +21,7 @@ def measure(reader, data, rows):
         times.append(1000*(perf_counter()-start))
         candidate = found['leitura_candidata_kwh']
         records.append({
-            'arquivo': row['arquivo'], 'cenario': row['cenario'], 'referencia': row['leitura'],
+            'arquivo': row['arquivo'], 'cenario': row.get('cenario', 'real'), 'referencia': row['leitura'],
             'candidata': candidate, 'confianca_minima': found['confianca_minima'],
             'status': found['status'], 'motivo': found['motivo'], 'correta': candidate==row['leitura'],
         })
@@ -31,18 +31,21 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--dados',type=Path,default=Path('dados'))
     parser.add_argument('--pesos',type=Path,default=DEFAULT_MODEL)
+    parser.add_argument('--classificador',type=Path,default=DEFAULT_CLASSIFIER)
     parser.add_argument('--saida',type=Path,default=Path('evidencias'))
+    parser.add_argument('--divisao',default='test',choices=('val','test'),help='val para calibrar; test so na medicao final')
+    parser.add_argument('--limiar',type=float,default=MIN_SCORE)
     args=parser.parse_args()
     with (args.dados/'manifesto.csv').open(encoding='utf-8') as file:
-        rows=[r for r in csv.DictReader(file) if r['divisao']=='test']
+        rows=[r for r in csv.DictReader(file) if r['divisao']==args.divisao]
     if len(rows) < 10:
         parser.error('O manifesto deve incluir ao menos 10 amostras de teste.')
-    records,times=measure(Reader(args.pesos),args.dados,rows)
+    records,times=measure(Reader(args.pesos,threshold=args.limiar,classificador=args.classificador),args.dados,rows)
     eligible=[r for r in records if r['status']=='leitura_sugerida']
     exact=sum(r['correta'] for r in records)
     exact_eligible=sum(r['correta'] for r in eligible)
     result={'imagens':len(records),'exatas':exact,'sugeridas':len(eligible),'sugeridas_corretas':exact_eligible,
-            'revisao':len(records)-len(eligible),'limiar':MIN_SCORE,'latencia_media_ms':mean(times),
+            'revisao':len(records)-len(eligible),'limiar':args.limiar,'divisao':args.divisao,'latencia_media_ms':mean(times),
             'latencia_p95_ms':float(np.percentile(times,95)),'fps':1000/mean(times),
             'por_cenario':{case:{'amostras':sum(r['cenario']==case for r in records),
                                 'exatas':sum(r['cenario']==case and r['correta'] for r in records)}

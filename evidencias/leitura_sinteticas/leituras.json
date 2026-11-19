@@ -5,9 +5,10 @@
   "sugeridas_corretas": 159,
   "revisao": 1,
   "limiar": 0.65,
-  "latencia_media_ms": 19.609818331286988,
-  "latencia_p95_ms": 23.283682449959993,
-  "fps": 50.9948630377939,
+  "divisao": "test",
+  "latencia_media_ms": 16.619420576898847,
+  "latencia_p95_ms": 20.35044416552409,
+  "fps": 60.17056944752993,
   "por_cenario": {
     "lcd": {
       "amostras": 54,

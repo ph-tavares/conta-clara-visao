@@ -1,0 +1,18 @@
+{
+  "imagens": 196,
+  "exatas": 74,
+  "sugeridas": 16,
+  "sugeridas_corretas": 14,
+  "revisao": 180,
+  "limiar": 0.65,
+  "divisao": "test",
+  "latencia_media_ms": 21.91285826788493,
+  "latencia_p95_ms": 35.197208693716675,
+  "fps": 45.63530634730482,
+  "por_cenario": {
+    "real": {
+      "amostras": 196,
+      "exatas": 74
+    }
+  }
+}

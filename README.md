@@ -47,8 +47,10 @@ python -m unittest -v                # 18 testes
 ```
 
 ```bash
-# foto: imprime JSON com a leitura, as caixas, a confiança e o status
-python conta_clara.py --fonte demonstracao/medidor_publico_cc0.jpg --saida saidas/leitura.jpg
+# foto real (mostrador enquadrado): imprime JSON com a leitura, as caixas, a confiança e o status
+python conta_clara.py --fonte demonstracao/medidor_aclara_74590.jpg --saida saidas/aclara.jpg      # 74590, leitura_sugerida
+python conta_clara.py --fonte demonstracao/medidor_landis_903123.jpg --saida saidas/landis.jpg     # 903123, confirmação pedida
+python conta_clara.py --fonte demonstracao/medidor_publico_cc0.jpg --saida saidas/reflexo.jpg      # reflexo apaga 2 dígitos: confirmação pedida
 # só o mostrador de uma foto aberta (x y largura altura) e quantidade de dígitos conhecida
 python conta_clara.py --fonte foto.jpg --roi 320 360 510 90 --digitos 5
 # vídeo quadro a quadro e webcam ao vivo (q ou Esc para sair)
@@ -56,7 +58,7 @@ python conta_clara.py --fonte demonstracao/entrada_sintetica.mp4 --saida saidas/
 python conta_clara.py --fonte 0 --exibir
 ```
 
-Os pesos estão em `modelos/best.pt` (detector) e `modelos/digitos.pt` (classificador). A foto é processada localmente e só é salva quando há `--saida`.
+Os pesos estão em `modelos/best.pt` (detector) e `modelos/digitos.pt` (classificador). A foto é processada localmente e só é salva quando há `--saida`. Enquadre só a janela do contador (na foto inteira, use `--roi`): com folga, os números pequenos da escala impressa embaixo dos roletes entram como dígitos a mais.
 
 ## Reproduzir
 

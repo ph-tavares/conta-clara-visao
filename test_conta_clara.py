@@ -1,6 +1,8 @@
 import unittest
 
-from conta_clara import Digit, read_digits, combinar
+import numpy as np
+
+from conta_clara import Digit, read_digits, combinar, recorte_quadrado
 
 class ReadingTests(unittest.TestCase):
     def sample(self, confidence=0.9):
@@ -62,6 +64,20 @@ class ReadingTests(unittest.TestCase):
         self.assertAlmostEqual(digits[0].confidence,.45)
         self.assertAlmostEqual(digits[1].confidence,.8)
         self.assertEqual(digits[1].bounds,(12,0,22,20))
+
+    def test_RotatedPhoto_over_45_degrees_requires_review(self):
+        digits=[Digit(t,.9,(20+8*i-5,20+14*i-10,20+8*i+5,20+14*i+10)) for i,t in enumerate('071245')]
+        result=read_digits(digits)
+        self.assertEqual(result['status'],'confirmacao_necessaria')
+        self.assertEqual(result['motivo'],'foto_girada')
+
+    def test_Deskew_crop_follows_text_angle(self):
+        imagem=np.zeros((100,100,3),np.uint8)
+        imagem[20:80,48:52]=255
+        reto=recorte_quadrado(imagem,(30,20,70,80),lado=40)
+        girado=recorte_quadrado(imagem,(30,20,70,80),lado=40,angulo=90)
+        self.assertGreater(reto[:,18:22].mean(),reto[18:22,:].mean())
+        self.assertGreater(girado[18:22,:].mean(),girado[:,18:22].mean())
 
 if __name__=='__main__':
     unittest.main()

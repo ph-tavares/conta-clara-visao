@@ -14,7 +14,7 @@ import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
-from conta_clara import recorte_quadrado  # mesmo recorte no treino e na leitura
+from conta_clara import MAX_TILT, angulo_texto, recorte_quadrado  # mesmo recorte no treino e na leitura
 from gerar_dados import DIGITS, SEGMENTS
 
 PASTAS_FONTES = ('/System/Library/Fonts', '/System/Library/Fonts/Supplemental', '/Library/Fonts',
@@ -94,14 +94,17 @@ def main():
             imagem = cv2.imread(str(foto))
             h, w = imagem.shape[:2]
             rotulo = args.dados / 'labels' / divisao / (foto.stem + '.txt')
-            for n, linha in enumerate(rotulo.read_text().splitlines()):
-                partes = linha.split()
-                if not partes or int(partes[0]) > 9:
-                    continue
+            linhas = [l.split() for l in rotulo.read_text().splitlines() if l.split() and int(l.split()[0]) <= 9]
+            centros = [(float(l[1]) * w, float(l[2]) * h) for l in linhas]
+            angulo = angulo_texto(centros) if len(centros) > 1 else 0.0
+            if abs(angulo) > MAX_TILT:  # foto girada: 6 e 9 ficam ambiguos; o leitor pede para girar a foto
+                contagem[divisao + '_fotos_giradas_fora'] = contagem.get(divisao + '_fotos_giradas_fora', 0) + 1
+                continue
+            for n, partes in enumerate(linhas):
                 k, x, y, bw, bh = int(partes[0]), *map(float, partes[1:5])
                 caixa = ((x - bw / 2) * w, (y - bh / 2) * h, (x + bw / 2) * w, (y + bh / 2) * h)
                 cv2.imwrite(str(args.destino / divisao / str(k) / f'{foto.stem}_{n}.png'),
-                            recorte_quadrado(imagem, caixa, args.lado))
+                            recorte_quadrado(imagem, caixa, args.lado, angulo=angulo))
                 contagem[divisao] = contagem.get(divisao, 0) + 1
     for k in range(10):
         for i in range(args.sinteticos_por_classe):

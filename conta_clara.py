@@ -19,6 +19,7 @@ CLS_IMGSZ = 64
 MIN_SCORE = 0.65
 IMGSZ = 416  # resolucao do treino (cabe na CPU do notebook; digitos reais ficam com 20-40 px)
 MIN_DIGITS, MAX_DIGITS = 5, 8  # mostradores reais tem de 5 a 8 digitos
+MAX_TILT = 45  # acima disso um 6 pode ser um 9 de cabeca para baixo: pede para girar a foto
 
 @dataclass(frozen=True)
 class Digit:
@@ -35,11 +36,18 @@ class Digit:
     def height(self):
         return self.bounds[3] - self.bounds[1]
 
-def recorte_quadrado(imagem: np.ndarray, caixa, lado: int = CLS_IMGSZ, margem: float = .12) -> np.ndarray:
-    """Recorte quadrado centrado na caixa (com folga), completado com a borda da imagem quando sai dela."""
+def recorte_quadrado(imagem: np.ndarray, caixa, lado: int = CLS_IMGSZ, margem: float = .12,
+                     angulo: float = 0.0) -> np.ndarray:
+    """Recorte quadrado centrado na caixa (com folga). Com angulo, gira para deixar a linha de digitos na horizontal."""
     x1, y1, x2, y2 = caixa
     cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
     meio = max(x2 - x1, y2 - y1) * (1 + margem) / 2
+    if angulo:
+        tamanho = max(2, int(round(2 * meio)))
+        matriz = cv2.getRotationMatrix2D((cx, cy), angulo, 1.0)
+        matriz[:, 2] += (tamanho / 2 - cx, tamanho / 2 - cy)
+        girado = cv2.warpAffine(imagem, matriz, (tamanho, tamanho), borderMode=cv2.BORDER_REPLICATE)
+        return cv2.resize(girado, (lado, lado), interpolation=cv2.INTER_AREA)
     a, b, c, d = (int(round(v)) for v in (cx - meio, cy - meio, cx + meio, cy + meio))
     h, w = imagem.shape[:2]
     borda = max(0, -a, -b, c - w, d - h)
@@ -68,6 +76,11 @@ def text_axis(points):
         ux, uy = -ux, -uy
     return ux, uy
 
+def angulo_texto(points) -> float:
+    """Inclinacao da linha de digitos em graus (0 = horizontal), no sistema da imagem."""
+    ux, uy = text_axis(points)
+    return float(np.degrees(np.arctan2(uy, ux)))
+
 def read_digits(digits: list[Digit], threshold: float = MIN_SCORE, esperados: int | None = None) -> dict:
     ux, uy = text_axis([d.center for d in digits])
     digits = sorted(digits, key=lambda d: d.center[0] * ux + d.center[1] * uy)
@@ -77,6 +90,8 @@ def read_digits(digits: list[Digit], threshold: float = MIN_SCORE, esperados: in
     reason = None
     if reading is None:
         reason = 'quantidade_de_digitos'
+    elif abs(np.degrees(np.arctan2(uy, ux))) > MAX_TILT:
+        reason = 'foto_girada'
     else:
         heights = [d.height for d in digits]
         along = [d.center[0] * ux + d.center[1] * uy for d in digits]
@@ -123,7 +138,10 @@ class Reader:
         boxes = prediction.boxes.cpu()
         caixas = [(round(x1)+x, round(y1)+y, round(x2)+x, round(y2)+y) for x1, y1, x2, y2 in boxes.xyxy.tolist()]
         if self.classifier is not None and caixas:
-            recortes = [recorte_quadrado(frame, c) for c in caixas]
+            centros = [((a + c) / 2, (b + d) / 2) for a, b, c, d in caixas]
+            angulo = angulo_texto(centros) if len(caixas) > 1 else 0.0
+            angulo = angulo if abs(angulo) <= MAX_TILT else 0.0
+            recortes = [recorte_quadrado(frame, c, angulo=angulo) for c in caixas]
             lidos = self.classifier.predict(recortes, imgsz=CLS_IMGSZ, device=self.device, verbose=False)
             classes = [(self.classifier.names[int(r.probs.top1)], float(r.probs.top1conf)) for r in lidos]
             digits = combinar(list(zip(caixas, boxes.conf.tolist())), classes)

@@ -79,5 +79,11 @@ class ReadingTests(unittest.TestCase):
         self.assertGreater(reto[:,18:22].mean(),reto[18:22,:].mean())
         self.assertGreater(girado[18:22,:].mean(),girado[:,18:22].mean())
 
+    def test_TwoStage_missing_classifier_fails_loudly(self):
+        from pathlib import Path
+        from conta_clara import Reader, DEFAULT_MODEL
+        with self.assertRaises(FileNotFoundError):
+            Reader(DEFAULT_MODEL,classificador=Path('nao_existe.pt'))
+
 if __name__=='__main__':
     unittest.main()

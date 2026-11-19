@@ -125,7 +125,9 @@ class Reader:
         self.device = device
         self.threshold = threshold
         self.esperados = esperados
-        self.classifier = YOLO(str(classificador)) if classificador and Path(classificador).is_file() else None
+        if classificador is not None and not Path(classificador).is_file():
+            raise FileNotFoundError(f'Classificador de digitos nao encontrado: {classificador}')
+        self.classifier = YOLO(str(classificador)) if classificador is not None else None
 
     def predict(self, frame: np.ndarray, roi: tuple[int, int, int, int] | None = None) -> dict:
         h, w = frame.shape[:2]
@@ -225,6 +227,8 @@ def main():
         parser.error('--limiar deve ficar entre 0,15 e 1')
     if args.digitos is not None and not MIN_DIGITS <= args.digitos <= MAX_DIGITS:
         parser.error(f'--digitos deve ficar entre {MIN_DIGITS} e {MAX_DIGITS}')
+    if not args.classificador.is_file():
+        parser.error(f'Classificador nao encontrado em {args.classificador}')
     if not args.pesos.is_file():
         parser.error(f'Pesos não encontrados em {args.pesos}')
     reader=Reader(args.pesos,args.device,args.limiar,args.digitos,args.classificador)

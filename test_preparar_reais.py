@@ -1,12 +1,25 @@
 import unittest
 
-from preparar_reais import agrupar, dividir_por_grupo
+import numpy as np
+
+from preparar_reais import construir_grupos, dividir_por_grupo
 
 class GroupSplitTests(unittest.TestCase):
     def test_GroupSplit_same_digits_share_group(self):
-        grupos=agrupar({'a.jpg':['1','2','3'],'b.jpg':['3','2','1'],'c.jpg':['9','9','1']})
-        self.assertEqual(grupos['a.jpg'],grupos['b.jpg'])
-        self.assertNotEqual(grupos['a.jpg'],grupos['c.jpg'])
+        rotulos={'a':['1','2','3'],'b':['3','2','1'],'c':['9','9','1']}
+        hashes={'a':np.zeros((4,256),bool),'b':np.ones((4,256),bool),'c':np.zeros((4,256),bool)}
+        hashes['c'][:,::2]=True  # 128 bits diferente de 'a' e de 'b' em todas as rotacoes
+        grupos=construir_grupos(rotulos,hashes,limite=12)
+        self.assertEqual(grupos['a'],grupos['b'])
+        self.assertNotEqual(grupos['a'],grupos['c'])
+
+    def test_GroupSplit_near_identical_images_share_group(self):
+        base=np.zeros((4,256),bool); base[:,::3]=True
+        quase=base.copy(); quase[0,:5]=~quase[0,:5]
+        outra=np.zeros((4,256),bool); outra[:,1::2]=True
+        grupos=construir_grupos({'x':['1'],'y':['7'],'z':['5']},{'x':base,'y':quase,'z':outra},limite=12)
+        self.assertEqual(grupos['x'],grupos['y'])
+        self.assertNotEqual(grupos['x'],grupos['z'])
 
     def test_GroupSplit_no_group_crosses_splits(self):
         grupos={f'img{i}.jpg':f'g{i//3}' for i in range(300)}

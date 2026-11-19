@@ -6,9 +6,9 @@
   "revisao": 1,
   "limiar": 0.65,
   "divisao": "test",
-  "latencia_media_ms": 13.92624662257731,
-  "latencia_p95_ms": 18.49023806862533,
-  "fps": 71.80685701621816,
+  "latencia_media_ms": 16.619420576898847,
+  "latencia_p95_ms": 20.35044416552409,
+  "fps": 60.17056944752993,
   "por_cenario": {
     "lcd": {
       "amostras": 54,

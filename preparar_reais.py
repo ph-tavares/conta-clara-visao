@@ -19,9 +19,27 @@ from conta_clara import Digit, text_axis
 
 FRACOES = (('train', .70), ('val', .15), ('test', .15))
 
-def agrupar(digitos_por_arquivo: dict[str, list[str]]) -> dict[str, str]:
-    """Mesmo conjunto de dígitos (em qualquer ordem) -> mesmo grupo."""
-    return {arquivo: ''.join(sorted(d)) for arquivo, d in digitos_por_arquivo.items()}
+def construir_grupos(digitos: dict[str, list[str]], hashes: dict[str, np.ndarray], limite: int = 12) -> dict[str, str]:
+    """Junta no mesmo grupo as fotos com o mesmo conjunto de dígitos OU com imagem quase igual (hash perceptual).
+
+    hashes[foto] tem as 4 rotações de 90 graus (4 x 256 bits); duas fotos são quase iguais quando alguma
+    rotação de uma fica a no máximo `limite` bits da outra. Devolve foto -> identificador do grupo.
+    """
+    fotos = sorted(digitos)
+    uniao = Grupos(fotos)
+    por_digitos = {}
+    for foto in fotos:
+        por_digitos.setdefault(''.join(sorted(digitos[foto])), []).append(foto)
+    for membros in por_digitos.values():
+        for outro in membros[1:]:
+            uniao.unir(outro, membros[0])
+    todas = np.array([hashes[f] for f in fotos]).astype(np.int16)        # (n, 4, 256)
+    base = todas[:, 0, :]
+    for i, foto in enumerate(fotos):
+        distancia = np.abs(todas[i][:, None, :] - base[None]).sum(2).min(0)
+        for j in np.nonzero(distancia <= limite)[0]:
+            uniao.unir(foto, fotos[j])
+    return {foto: uniao.raiz(foto) for foto in fotos}
 
 def dividir_por_grupo(grupos: dict[str, str], fracoes=FRACOES) -> dict[str, str]:
     """Sorteio determinístico por grupo (hash do nome do grupo): um grupo inteiro cai numa única divisão."""
@@ -76,22 +94,8 @@ def main():
     fotos = sorted(p for p in args.origem.glob('*/images/*') if p.suffix.lower() in {'.jpg', '.jpeg', '.png'})
     rotulos = {p: ler_rotulos(p.parent.parent / 'labels' / (p.stem + '.txt')) for p in fotos}
     fotos = [p for p in fotos if rotulos[p]]
-    chave = {str(p): str(p) for p in fotos}
-    uniao = Grupos(chave)
-    por_digitos = {}
-    for p in fotos:
-        por_digitos.setdefault(''.join(sorted(str(r[0]) for r in rotulos[p])), []).append(str(p))
-    for membros in por_digitos.values():
-        for outro in membros[1:]:
-            uniao.unir(outro, membros[0])
-    hashes = np.array([assinatura(p) for p in fotos])            # (n, 4, 256)
-    base = hashes[:, 0, :].astype(np.int16)
-    for i in range(len(fotos)):
-        distancia = np.abs(hashes[i][:, None, :].astype(np.int16) - base[None]).sum(2).min(0)
-        for j in np.nonzero(distancia <= args.limite_hash)[0]:
-            uniao.unir(str(fotos[i]), str(fotos[j]))
-    grupos = {str(p): uniao.raiz(str(p)) for p in fotos}
-    hash_de = {str(p): hashes[i] for i, p in enumerate(fotos)}
+    hash_de = {str(p): assinatura(p) for p in fotos}
+    grupos = construir_grupos({str(p): [str(r[0]) for r in rotulos[p]] for p in fotos}, hash_de, args.limite_hash)
     divisao = dividir_por_grupo(grupos)
     if args.max_por_grupo:
         mantidas = {}

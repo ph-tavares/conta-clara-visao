@@ -6,9 +6,9 @@
   "revisao": 180,
   "limiar": 0.65,
   "divisao": "test",
-  "latencia_media_ms": 19.369517261761107,
-  "latencia_p95_ms": 29.228854516986758,
-  "fps": 51.627512781342205,
+  "latencia_media_ms": 21.91285826788493,
+  "latencia_p95_ms": 35.197208693716675,
+  "fps": 45.63530634730482,
   "por_cenario": {
     "real": {
       "amostras": 196,

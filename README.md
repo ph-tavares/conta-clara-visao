@@ -31,7 +31,7 @@ Medidos uma única vez, com o modelo final, em dados que o modelo nunca viu:
 | Bancada sintética | 160 imagens do gerador original | **160 de 160** |
 | Velocidade | CPU de notebook (Apple M5) | 19 ms por foto, ~51 quadros/s |
 
-Arquivos: [`evidencias/deteccao.json`](evidencias/deteccao.json), [`evidencias/classificador.json`](evidencias/classificador.json), [`evidencias/leituras_reais.json`](evidencias/leituras_reais.json), [`evidencias/teste_externo.json`](evidencias/teste_externo.json) e as imagens anotadas em [`evidencias/teste_externo/`](evidencias/teste_externo).
+Arquivos: [`evidencias/deteccao_teste/`](evidencias/deteccao_teste), [`evidencias/classificador_teste/`](evidencias/classificador_teste) (acerto por dígito 86,2%), [`evidencias/leitura_reais/`](evidencias/leitura_reais), [`evidencias/leitura_sinteticas/`](evidencias/leitura_sinteticas), [`evidencias/teste_externo.json`](evidencias/teste_externo.json) e as imagens anotadas em [`evidencias/teste_externo/`](evidencias/teste_externo).
 
 **Sem vazamento entre treino e teste.** A base pública traz várias cópias da mesma foto (giradas e recortadas). Na divisão original, 155 das 188 fotos de teste tinham uma cópia no treino. `preparar_reais.py` agrupa as cópias por cena (mesmos dígitos ou imagem quase igual) e coloca cada cena inteira numa só divisão: 0 cenas cruzadas, 0 quase-cópias entre teste e treino.
 
@@ -83,12 +83,14 @@ A divisão treino/validação/teste é a mesma nas três etapas: ela depende só
 3. Avalie:
 
 ```bash
-python avaliar.py --dados dados_reais --divisao test           # fotos reais reservadas
-python avaliar.py --dados dados --divisao test                 # bancada sintética
+python treinar.py --somente-avaliar --base modelos/best.pt --dados dados_reais/dados.yaml --classe-unica --divisao test --saida evidencias/deteccao_teste
+python treinar_classificador.py --somente-avaliar --base modelos/digitos.pt --divisao test --saida evidencias/classificador_teste
+python avaliar.py --dados dados_reais --saida evidencias/leitura_reais          # leitura completa, fotos reais reservadas
+python avaliar.py --dados dados --saida evidencias/leitura_sinteticas           # bancada sintética
 python teste_externo/baixar.py && python teste_externo/avaliar.py
 ```
 
-O limiar de sugestão foi escolhido na validação (`avaliar.py --divisao val --limiar ...`); o teste só foi usado na medição final.
+O limiar de sugestão (0,65) foi conferido na validação (`avaliar.py --divisao val --limiar ...`). Os scripts de treino medem só na validação. Durante o desenvolvimento, a versão anterior desses scripts também imprimia o mAP de teste do detector ao fim das etapas 1 e 2; esses números (0,64 e 0,77) mostraram que o detector de dez classes não bastava e motivaram a arquitetura em duas etapas. O teste da leitura completa e o teste externo foram rodados uma vez, com o modelo final.
 
 ## Estrutura
 

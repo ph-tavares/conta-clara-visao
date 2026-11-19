@@ -3,6 +3,8 @@
 **Pedro Henrique Pedrosa Tavares · RM97877**
 Global Solution FIAP 2026.2 · CitizenTech · Engenharia de Software 4ES
 
+**Vídeo da solução funcionando:** https://youtu.be/UPV-JLrCvGg
+
 O Conta Clara ajuda famílias de baixa renda a acompanhar a conta de luz. Este repositório é o componente de visão computacional: a família fotografa o mostrador do medidor e o sistema lê o número de kWh, que ela confere antes de salvar.
 
 ## Como funciona

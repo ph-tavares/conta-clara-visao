@@ -21,7 +21,7 @@ Em todos os casos a família confirma o número antes de ele entrar no históric
 
 ## Resultados
 
-Medidos uma única vez, com o modelo final, em dados que o modelo nunca viu:
+Medidos com o modelo final, em dados fora do treino. A leitura completa e o teste externo foram rodados uma única vez; o mAP de detecção no teste também foi consultado nas etapas intermediárias (ver [Reproduzir](#reproduzir)).
 
 | Teste | O que é | Resultado |
 |---|---|---|

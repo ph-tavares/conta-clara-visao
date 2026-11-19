@@ -1,0 +1,162 @@
+{
+  "fotos": 17,
+  "exatas": 10,
+  "sugeridas": 5,
+  "sugeridas_corretas": 4,
+  "revisao": 12,
+  "registros": [
+    {
+      "id": "w001a",
+      "referencia": "74590",
+      "candidata": "74590",
+      "status": "leitura_sugerida",
+      "motivo": null,
+      "confianca_minima": 0.6526,
+      "correta": true
+    },
+    {
+      "id": "w057a",
+      "referencia": "000000",
+      "candidata": "000000",
+      "status": "leitura_sugerida",
+      "motivo": null,
+      "confianca_minima": 0.8005,
+      "correta": true
+    },
+    {
+      "id": "w076a",
+      "referencia": "655219",
+      "candidata": "65521",
+      "status": "confirmacao_necessaria",
+      "motivo": "baixa_confianca",
+      "confianca_minima": 0.2193,
+      "correta": false
+    },
+    {
+      "id": "w079a",
+      "referencia": "265437",
+      "candidata": null,
+      "status": "confirmacao_necessaria",
+      "motivo": "quantidade_de_digitos",
+      "confianca_minima": null,
+      "correta": false
+    },
+    {
+      "id": "w088a",
+      "referencia": "715257",
+      "candidata": "715257",
+      "status": "confirmacao_necessaria",
+      "motivo": "baixa_confianca",
+      "confianca_minima": 0.319,
+      "correta": true
+    },
+    {
+      "id": "w090a",
+      "referencia": "3236743",
+      "candidata": "3236743",
+      "status": "confirmacao_necessaria",
+      "motivo": "baixa_confianca",
+      "confianca_minima": 0.3966,
+      "correta": true
+    },
+    {
+      "id": "w093a",
+      "referencia": "768989",
+      "candidata": "7689899",
+      "status": "confirmacao_necessaria",
+      "motivo": "disposicao_inconsistente",
+      "confianca_minima": 0.2372,
+      "correta": false
+    },
+    {
+      "id": "w093b",
+      "referencia": "903123",
+      "candidata": "903123",
+      "status": "confirmacao_necessaria",
+      "motivo": "baixa_confianca",
+      "confianca_minima": 0.1602,
+      "correta": true
+    },
+    {
+      "id": "w109a",
+      "referencia": "091330",
+      "candidata": "691330",
+      "status": "leitura_sugerida",
+      "motivo": null,
+      "confianca_minima": 0.7144,
+      "correta": false
+    },
+    {
+      "id": "w112a",
+      "referencia": "1685353",
+      "candidata": "1685353",
+      "status": "confirmacao_necessaria",
+      "motivo": "baixa_confianca",
+      "confianca_minima": 0.5476,
+      "correta": true
+    },
+    {
+      "id": "w113a",
+      "referencia": "1685333",
+      "candidata": "1685333",
+      "status": "confirmacao_necessaria",
+      "motivo": "baixa_confianca",
+      "confianca_minima": 0.4928,
+      "correta": true
+    },
+    {
+      "id": "w114a",
+      "referencia": "1685363",
+      "candidata": "1685363",
+      "status": "confirmacao_necessaria",
+      "motivo": "baixa_confianca",
+      "confianca_minima": 0.5231,
+      "correta": true
+    },
+    {
+      "id": "w010a",
+      "referencia": "000097",
+      "candidata": "000097",
+      "status": "leitura_sugerida",
+      "motivo": null,
+      "confianca_minima": 0.7806,
+      "correta": true
+    },
+    {
+      "id": "w010b",
+      "referencia": "000059",
+      "candidata": "0000598",
+      "status": "confirmacao_necessaria",
+      "motivo": "baixa_confianca",
+      "confianca_minima": 0.3024,
+      "correta": false
+    },
+    {
+      "id": "w010c",
+      "referencia": "000044",
+      "candidata": null,
+      "status": "confirmacao_necessaria",
+      "motivo": "quantidade_de_digitos",
+      "confianca_minima": null,
+      "correta": false
+    },
+    {
+      "id": "w017a",
+      "referencia": "000010",
+      "candidata": "000010",
+      "status": "leitura_sugerida",
+      "motivo": null,
+      "confianca_minima": 0.7151,
+      "correta": true
+    },
+    {
+      "id": "w034a",
+      "referencia": "74744",
+      "candidata": "714744",
+      "status": "confirmacao_necessaria",
+      "motivo": "disposicao_inconsistente",
+      "confianca_minima": 0.4324,
+      "correta": false
+    }
+  ]
+}
